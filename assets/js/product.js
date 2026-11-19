@@ -48,11 +48,8 @@ $("#pdp").innerHTML = `
   <div class="stock ${out?"is-out":p.stock<=5?"is-low":""}"><i></i>${out?"Rupture de stock — prévenez-moi au retour":p.stock<=5?`Plus que ${p.stock} pièces disponibles`:"En stock · expédié sous 24 h"}</div>
   <div class="buy">
     <div class="buy__row"><div class="qty"><button data-qty="-1" aria-label="Diminuer">${icon("minus")}</button><span id="qtyV">1</span><button data-qty="1" aria-label="Augmenter">${icon("plus")}</button></div>
-    <button class="btn btn--gold btn--lg" id="buyNow" ${out?"disabled style=\"opacity:.5\"":""}><span>${out?t("card.out"):"Commander maintenant"}</span></button></div>
-    <div class="buy__row buy__row--2">
-      <button class="btn btn--ghost btn--lg" id="addBtn" ${out?"disabled style=\"opacity:.5\"":""}>${icon("bag")}<span>${t("pdp.add")}</span></button>
-      <a class="btn btn--wa btn--lg" id="waBtn" target="_blank" rel="noopener">${icon("wa")}<span>WhatsApp</span></a>
-    </div>
+    <button class="btn btn--wa btn--lg" id="buyNow" ${out?"disabled style=\"opacity:.5\"":""}>${out?"":icon("wa")}<span>${out?t("card.out"):"Commander maintenant"}</span></button></div>
+    <button class="btn btn--ghost btn--lg btn--block" id="addBtn" ${out?"disabled style=\"opacity:.5\"":""}>${icon("bag")}<span>${t("pdp.add")}</span></button>
     <p class="buy__cod">${icon("cash")} Paiement à la livraison · ${p.price >= C.freeShipping ? "Livraison offerte" : `Livraison ${fmt(C.shippingFee)}, offerte dès ${fmt(C.freeShipping)}`}</p>
     <button class="link-u" id="favBtn" style="justify-self:center;margin-top:4px">${icon("heart")} <span>${window.SL.favs.includes(p.id)?"Dans vos favoris":"Ajouter aux favoris"}</span></button>
   </div>
@@ -89,7 +86,7 @@ gMain.addEventListener("touchend", e => { if(x0===null) return; const dx = e.cha
 /* Options */
 const selItem = () => ({ id:p.id, color:sel.color, size:sel.size, variant:sel.variant, qty:sel.qty });
 function waMsg(){ const it = [selItem()]; return window.SL.orderMessage(it, window.SL.totalsFor(it, false)) + "\n" + location.href.split("#")[0]; }
-function syncWa(){ $$("#waBtn,#stickyWa").forEach(a => a.href = waLink(waMsg())); }
+function syncWa(){ $$("#waBtn").forEach(a => a.href = waLink(waMsg())); }
 document.addEventListener("click", e => {
   const c = e.target.closest("[data-color]"); if(c && !c.disabled){ sel.color = c.dataset.color; $$("[data-color]").forEach(x=>x.classList.toggle("is-active",x===c)); $("#cLbl").textContent = COLOR_LABEL[sel.color]; syncWa(); }
   const s = e.target.closest("[data-size]"); if(s){ sel.size = s.dataset.size; $$("[data-size]").forEach(x=>x.classList.toggle("is-active",x===s)); syncWa(); }
@@ -102,13 +99,14 @@ $("#addBtn").addEventListener("click", doAdd);
 const doBuy = () => { if(out) return; window.SL.openOrder("express", [selItem()]); };
 $("#buyNow").addEventListener("click", doBuy);
 $("#stickyAdd").addEventListener("click", doBuy);
+$("#stickyCart").addEventListener("click", doAdd);
 $("#favBtn").addEventListener("click", () => { toggleFav(p.id); $("#favBtn span").textContent = window.SL.favs.includes(p.id)?"Dans vos favoris":"Ajouter aux favoris"; });
 $("#shareWa").href = waLink(`Regarde ce bijou Sirène Luxury : ${p.name} – ${location.href}`); $("#shareWa").target = "_blank";
 $("#shareCopy").addEventListener("click", e => { e.preventDefault(); navigator.clipboard && navigator.clipboard.writeText(location.href); window.SL.toast("Lien copié"); });
 
 /* Sticky mobile bar */
 $("#stickyName").innerHTML = `<b style="font-family:var(--serif);font-size:17px;font-weight:500">${esc(p.name)}</b><span>${fmt(p.price)} · paiement à la livraison</span>`;
-if(out){ $("#stickyAdd").disabled = true; $("#stickyAdd").style.opacity = .5; }
+if(out){ ["#stickyAdd","#stickyCart"].forEach(x => { $(x).disabled = true; $(x).style.opacity = .5; }); }
 const sticky = $("#stickyBuy"), addBtn = $("#addBtn");
 new IntersectionObserver(([e]) => { const show = !e.isIntersecting && e.boundingClientRect.top < 0; sticky.classList.toggle("is-show", show); document.body.classList.toggle("has-sticky", show); }).observe(addBtn);
 

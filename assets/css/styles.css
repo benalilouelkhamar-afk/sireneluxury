@@ -863,3 +863,7 @@ html[dir="rtl"] .otimeline li{padding:0 30px 16px 0}
   #buyNow{letter-spacing:.08em}
   body[data-page="product"] .wa-float{display:none}
 }
+
+/* Commande via WhatsApp */
+.sticky-buy{grid-template-columns:1fr 1fr}
+.osubmit__lbl{display:inline-flex;align-items:center;gap:10px}

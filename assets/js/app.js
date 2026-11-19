@@ -169,7 +169,6 @@ function renderCart(){
     <div class="sumrow"><span>${t("cart.ship")}</span><span>${T.ship ? fmt(T.ship) : t("cart.free")}</span></div>
     <div class="sumrow sumrow--total"><span>${t("cart.total")}</span><span>${fmt(T.total)}</span></div>`;
   $("#giftWrap").checked = gift;
-  $("#cartWa").href = waLink(cartWaMessage());
 }
 function upsellHtml(){
   const inCart = new Set(cart.map(c=>c.id));
@@ -298,8 +297,7 @@ function cartDrawerHtml(){
     <div class="cart__foot" id="cartFoot">
       <label class="cart__gift"><input type="checkbox" id="giftWrap"> ${icon("gift")} <span>${t("cart.gift")} (+${fmt(C.giftWrap)})</span></label>
       <div id="cartSum"></div>
-      <button class="btn btn--dark btn--block btn--lg" data-order="cart"><span data-i18n="cart.checkout">${t("cart.checkout")}</span></button>
-      <a href="#" id="cartWa" target="_blank" rel="noopener" class="btn btn--wa btn--block">${icon("wa")}<span data-i18n="cart.wa">${t("cart.wa")}</span></a>
+      <button class="btn btn--wa btn--block btn--lg" data-order="cart">${icon("wa")}<span>Commander maintenant</span></button>
       <p class="fine" style="text-align:center;margin:2px 0 0" data-i18n="cart.cod">${t("cart.cod")}</p>
     </div></aside></div>`;
 }
@@ -483,8 +481,6 @@ function formHtml(cust){
     <label class="ogift"><input type="checkbox" name="gift" ${orderCtx && orderCtx.gift ? "checked":""}> ${icon("gift")} <span>Emballage cadeau premium <small>+${fmt(C.giftWrap)}</small></span></label>
     <div class="ocod">${icon("cash")}<div><b>Paiement à la livraison</b><small>Vous payez en espèces à la réception. Aucun paiement en ligne.</small></div></div>
     <div id="oSubmitSlot"></div>
-    <div class="oor"><span>ou</span></div>
-    <a class="btn btn--wa btn--block" id="oWa" target="_blank" rel="noopener">${icon("wa")}<span>Commander directement sur WhatsApp</span></a>
   </form>`;
 }
 function renderOrder(){
@@ -495,11 +491,10 @@ function renderOrder(){
   box.innerHTML = `<ul class="otrust"><li>${icon("cash")} Paiement à la livraison</li><li>${icon("truck")} 24 à 72 h partout au Maroc</li><li>${icon("refresh")} Échange 7 jours</li></ul>`
     + recapHtml(orderCtx.items, T, orderCtx.source === "express") + formHtml(cust);
   if(keep.note){ box.querySelector("[name=note]").value = keep.note; box.querySelector(".onote").open = true; }
-  const sub = `<button class="btn btn--dark btn--lg btn--block osubmit" type="submit" form="oform"><span>Confirmer la commande</span><span class="osubmit__tot">${fmt(T.total)}</span></button>
-    <p class="fine" style="text-align:center;margin:0">Nous vous appelons ou vous écrivons sur WhatsApp pour confirmer avant l'envoi.</p>`;
+  const sub = `<button class="btn btn--wa btn--lg btn--block osubmit" type="submit" form="oform"><span class="osubmit__lbl">${icon("wa")}<span>Commander maintenant</span></span><span class="osubmit__tot">${fmt(T.total)}</span></button>
+    <p class="fine" style="text-align:center;margin:0">Votre commande s'ouvre dans WhatsApp : appuyez sur Envoyer pour la valider.</p>`;
   if(orderCtx.foot){ orderCtx.foot.innerHTML = sub; box.querySelector("#oSubmitSlot").remove(); }
   else box.querySelector("#oSubmitSlot").outerHTML = sub;
-  box.querySelector("#oWa").href = waLink(orderMessage(orderCtx.items, T));
   bindOrderForm(box);
 }
 function bindOrderForm(box){
@@ -540,14 +535,16 @@ function submitOrder(f){
   if(C.orderWebhook){ try{ fetch(C.orderWebhook, { method:"POST", mode:"no-cors", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(order) }).catch(()=>{}); }catch(e){} }
   if(orderCtx.source === "cart"){ cart = []; saveCart(); }
   const wa = waLink(orderMessage(items, T, customer, ref));
+  const win = window.open(wa, "_blank");
+  if(!win) location.href = wa;
   setTimeout(() => {
     orderCtx.el.innerHTML = `<div class="odone">
       <div class="done__seal">${icon("check")}</div>
       <span class="eyebrow">Commande ${ref}</span>
-      <h3 class="osheet__title" style="font-size:30px">Merci ${esc(customer.name.split(" ")[0])}, c'est noté !</h3>
-      <p class="muted" style="margin:0">Dernière étape : envoyez-nous votre commande sur WhatsApp pour la confirmer en un clic. Nous préparons votre écrin dès réception.</p>
-      <a class="btn btn--wa btn--lg btn--block" href="${wa}" target="_blank" rel="noopener">${icon("wa")}<span>Confirmer sur WhatsApp</span></a>
-      <ol class="otimeline"><li class="is-done"><b>Commande reçue</b><small>${items.length} article${items.length>1?"s":""} · ${fmt(T.total)}</small></li><li><b>Confirmation</b><small>Par WhatsApp ou appel au ${esc(customer.phone)}</small></li><li><b>Livraison à ${esc(customer.city)}</b><small>Sous 24 à 72 h · paiement en espèces</small></li></ol>
+      <h3 class="osheet__title" style="font-size:30px">Merci ${esc(customer.name.split(" ")[0])} !</h3>
+      <p class="muted" style="margin:0">Votre commande s'est ouverte dans WhatsApp. Appuyez sur <b>Envoyer</b> pour la valider, nous préparons votre écrin dès réception.</p>
+      <a class="btn btn--ghost btn--block" href="${wa}" target="_blank" rel="noopener">${icon("wa")}<span>Rouvrir WhatsApp</span></a>
+      <ol class="otimeline"><li class="is-done"><b>Commande reçue</b><small>${items.length} article${items.length>1?"s":""} · ${fmt(T.total)}</small></li><li><b>Confirmation</b><small>Nous vous répondons sur WhatsApp au ${esc(customer.phone)}</small></li><li><b>Livraison à ${esc(customer.city)}</b><small>Sous 24 à 72 h · paiement en espèces</small></li></ol>
       <a class="link-u" href="index.html" data-close>Continuer mes achats</a></div>`;
     if(orderCtx.foot) orderCtx.foot.innerHTML = "";
     orderCtx.el.scrollTop = 0;
