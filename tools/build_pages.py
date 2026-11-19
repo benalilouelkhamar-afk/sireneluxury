@@ -65,45 +65,18 @@ page('produit.html', 'Bijou — Sirène Luxury', 'Bijou plaqué or qui ne noirci
   <div class="carousel__nav"><button class="carousel__btn" data-prev aria-label="Précédent"><svg class="icon" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button class="carousel__btn" data-next aria-label="Suivant"><svg class="icon" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div></div>
   <div class="carousel__track" id="likeTrack"></div><div class="carousel__bar"><i></i></div></div></section>
 <div class="sticky-buy" id="stickyBuy"><div style="grid-column:1/-1;font-size:12.5px;display:flex;justify-content:space-between" id="stickyName"></div>
-  <button class="btn btn--dark" id="stickyAdd">Ajouter au panier</button><a class="btn btn--wa" id="stickyWa" target="_blank" rel="noopener">Commander</a></div>''', ['product.js'])
+  <button class="btn btn--gold" id="stickyAdd">Commander maintenant</button><a class="btn btn--wa sticky-buy__wa" id="stickyWa" target="_blank" rel="noopener" aria-label="Commander sur WhatsApp"><svg class="icon" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M12 2.2A9.7 9.7 0 0 0 3.6 16.8L2.3 21.7l5-1.3A9.7 9.7 0 1 0 12 2.2zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 19.9zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8 1c-.1.2-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6.5-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.5-.3z"/></svg></a></div>''', ['product.js'])
 
 # ---------- Commande
 page('commande.html', 'Commande — Sirène Luxury', 'Finalisez votre commande Sirène Luxury : paiement à la livraison partout au Maroc.', 'checkout', '''
-<div class="container" id="coWrap">
+<div class="container">
   <nav class="crumbs"><a href="index.html">Accueil</a><span>/</span><span>Commande</span></nav>
-  <div class="co">
-    <div class="co__box">
-      <div class="co__steps"><b>1. Coordonnées</b><i></i><span>2. Confirmation</span><i></i><span>3. Livraison</span></div>
-      <h1 class="h-section" style="font-size:clamp(30px,4vw,40px);margin-bottom:6px">Vos coordonnées de livraison</h1>
-      <p class="muted" style="margin:0 0 24px;font-size:14px">Aucun paiement en ligne requis : vous réglez en espèces à la réception de votre écrin.</p>
-      <form id="coForm" novalidate class="fgrid">
-        <label class="flabel">Nom complet<input class="field" name="name" autocomplete="name" placeholder="Ex. Salma Benali" required><span class="err">Merci d'indiquer votre nom complet.</span></label>
-        <label class="flabel">Téléphone (WhatsApp de préférence)<span class="tel"><span>+212</span><input class="field" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="6 12 34 56 78" required></span><span class="err">Numéro marocain invalide (ex. 06 12 34 56 78).</span></label>
-        <label class="flabel">Ville<select class="field" name="city" id="city" required></select><span class="err">Choisissez votre ville.</span></label>
-        <label class="flabel">Adresse complète<input class="field" name="address" autocomplete="street-address" placeholder="Quartier, rue, numéro, étage…" required><span class="err">Merci d'indiquer votre adresse.</span></label>
-        <label class="flabel">Note pour la livraison (facultatif)<textarea class="field" name="note" placeholder="Créneau préféré, message pour une carte cadeau…"></textarea></label>
-        <div style="margin-top:8px"><h2 style="font-size:24px;margin-bottom:12px">Paiement</h2>
-          <div class="fgrid">
-            <label class="payopt is-active"><input type="radio" name="pay" value="cod" checked><span><b>Paiement à la livraison</b><small>Réglez en espèces à la réception</small></span><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="1.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v5M17.5 9.5v5"/></svg></label>
-            <label class="payopt is-disabled"><input type="radio" name="pay" value="card" disabled><span><b>Carte bancaire</b><small>Bientôt disponible (CMI)</small></span><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="M3 10h18M6.5 15h4"/></svg></label>
-          </div></div>
-        <div style="margin-top:8px"><h2 style="font-size:24px;margin-bottom:12px">Confirmation de la commande</h2>
-          <div class="confirm-choice">
-            <label class="payopt is-active" style="grid-template-columns:22px 1fr"><input type="radio" name="confirm" value="wa" checked><span><b>Par WhatsApp</b><small>Le plus rapide</small></span></label>
-            <label class="payopt" style="grid-template-columns:22px 1fr"><input type="radio" name="confirm" value="call"><span><b>Par appel</b><small>Sous 2 h ouvrées</small></span></label>
-          </div></div>
-        <button class="btn btn--dark btn--lg btn--block" style="margin-top:12px">Valider ma commande</button>
-        <p class="fine" style="text-align:center;margin:0">En validant, vous acceptez nos <a href="cgv.html" style="text-decoration:underline">conditions générales de vente</a>.</p>
-      </form>
-    </div>
-    <aside class="co__summary"><div class="co__box" style="background:var(--ivory-2)">
-      <h2 style="font-size:26px;margin-bottom:6px">Votre écrin</h2>
-      <div id="sumItems"></div><div id="sumTot" style="display:grid;gap:8px;padding-top:16px"></div>
-      <div class="perks" style="margin-top:20px;background:var(--ivory)"><div>Livraison 24 à 72 h</div><div>Échange 7 jours</div><div>Ne noircit pas</div><div>Écrin offert</div></div>
-    </div></aside>
+  <div class="copage">
+    <span class="eyebrow">Paiement à la livraison</span>
+    <h1 class="osheet__title" style="margin:6px 0 18px">Finaliser ma commande</h1>
+    <div id="coWrap"></div>
   </div>
-</div>
-<script>document.addEventListener("click",function(e){var o=e.target.closest(".confirm-choice .payopt");if(!o)return;document.querySelectorAll(".confirm-choice .payopt").forEach(function(x){x.classList.toggle("is-active",x===o)});});</script>''', ['checkout.js'])
+</div>''', ['checkout.js'])
 
 # ---------- À propos
 content('a-propos.html', 'Notre histoire', 'L\'histoire de Sirène Luxury, joaillerie marocaine en acier inoxydable et Xuping plaqué or.', 'À propos', 'Une maison marocaine née d\'une conviction : le luxe doit pouvoir se porter tous les jours.', 'look-caftan', f'''

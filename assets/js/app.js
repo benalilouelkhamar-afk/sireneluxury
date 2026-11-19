@@ -96,22 +96,45 @@ function addToCart(id, opts={}, qty=1, silent){
   if(!silent){ openCart(); }
 }
 function saveCart(){ store.set("cart", cart); renderCart(); updateCounts(); }
-function cartTotals(){
+function totalsFor(items, withGift){
   let sub = 0, disc = 0; const lines = {};
-  cart.forEach(it => { const p = byId(it.id); if(!p) return; sub += p.price * it.qty; if(p.line){ (lines[p.line] = lines[p.line] || new Set()).add(p.id); } });
+  items.forEach(it => { const p = byId(it.id); if(!p) return; sub += p.price * it.qty; if(p.line){ (lines[p.line] = lines[p.line] || new Set()).add(p.id); } });
   // Remise parure automatique : 3 pièces différentes d'une même ligne = -15 % sur ces pièces
   const discLines = Object.keys(lines).filter(l => lines[l].size >= 3);
-  cart.forEach(it => { const p = byId(it.id); if(p && p.line && discLines.includes(p.line)) disc += p.price * it.qty * C.bundleDiscount; });
-  const giftFee = gift && cart.length ? C.giftWrap : 0;
+  items.forEach(it => { const p = byId(it.id); if(p && p.line && discLines.includes(p.line)) disc += p.price * it.qty * C.bundleDiscount; });
+  const giftFee = withGift && items.length ? C.giftWrap : 0;
   const after = sub - disc;
-  const ship = cart.length === 0 ? 0 : (after >= C.freeShipping ? 0 : C.shippingFee);
-  return { sub, disc, ship, giftFee, total: after + ship + giftFee, discLines, count: cart.reduce((a,b)=>a+b.qty,0) };
+  const ship = items.length === 0 ? 0 : (after >= C.freeShipping ? 0 : C.shippingFee);
+  return { sub, disc, ship, giftFee, total: after + ship + giftFee, discLines, count: items.reduce((a,b)=>a+b.qty,0) };
 }
-function cartWaMessage(){
-  const T = cartTotals();
-  const lines = cart.map(it => { const p = byId(it.id); return `• ${p.name} – ${p.type} (${COLOR_LABEL[it.color]||it.color}${it.size?", "+it.size:""}${it.variant?", "+it.variant:""}) x${it.qty} : ${fmt(p.price*it.qty)}`; }).join("\n");
-  return `Bonjour Sirène Luxury, je souhaite commander :\n${lines}\n${T.disc?`Remise parure : -${fmt(T.disc)}\n`:""}${T.giftFee?`Emballage cadeau : ${fmt(T.giftFee)}\n`:""}Livraison : ${T.ship?fmt(T.ship):"offerte"}\nTotal : ${fmt(T.total)}\nPaiement à la livraison.`;
+function cartTotals(){ return totalsFor(cart, gift); }
+function itemOpts(it){ return [COLOR_LABEL[it.color]||"", it.size, it.variant].filter(Boolean).join(" · "); }
+/* Message WhatsApp structuré (gras WhatsApp avec *…*) */
+function orderMessage(items, T, customer, ref){
+  const L = [];
+  L.push(ref ? `*Nouvelle commande ${ref}*` : `Bonjour Sirène Luxury,`);
+  L.push(ref ? `` : `Je souhaite commander :`);
+  if(!ref) L.push("");
+  items.forEach((it, n) => { const p = byId(it.id); if(!p) return;
+    L.push(`*${n+1}. ${p.name}* – ${p.type}`);
+    L.push(`    ${itemOpts(it)} · Qté ${it.qty} · ${fmt(p.price*it.qty)}`);
+  });
+  L.push("");
+  L.push(`Sous-total : ${fmt(T.sub)}`);
+  if(T.disc) L.push(`Remise parure -15 % : -${fmt(T.disc)}`);
+  if(T.giftFee) L.push(`Emballage cadeau : ${fmt(T.giftFee)}`);
+  L.push(`Livraison : ${T.ship ? fmt(T.ship) : "offerte"}`);
+  L.push(`*Total à payer à la livraison : ${fmt(T.total)}*`);
+  if(customer){
+    L.push("", "*Livraison*", `Nom : ${customer.name}`, `Téléphone : ${customer.phone}`, `Ville : ${customer.city}`, `Adresse : ${customer.address}`);
+    if(customer.note) L.push(`Note : ${customer.note}`);
+    L.push("", "Paiement à la livraison. Merci de me confirmer la commande.");
+  } else {
+    L.push("", "Paiement à la livraison. Merci de m'indiquer la disponibilité.");
+  }
+  return L.join("\n").replace(/\n{3,}/g, "\n\n");
 }
+function cartWaMessage(){ return orderMessage(cart, cartTotals()); }
 function updateCounts(){
   const n = cartTotals().count, f = favs.length;
   $$("[data-cart-count]").forEach(el => { el.textContent = n; el.classList.toggle("has", n>0); });
@@ -275,7 +298,7 @@ function cartDrawerHtml(){
     <div class="cart__foot" id="cartFoot">
       <label class="cart__gift"><input type="checkbox" id="giftWrap"> ${icon("gift")} <span>${t("cart.gift")} (+${fmt(C.giftWrap)})</span></label>
       <div id="cartSum"></div>
-      <a href="commande.html" class="btn btn--dark btn--block btn--lg" data-i18n="cart.checkout">${t("cart.checkout")}</a>
+      <button class="btn btn--dark btn--block btn--lg" data-order="cart"><span data-i18n="cart.checkout">${t("cart.checkout")}</span></button>
       <a href="#" id="cartWa" target="_blank" rel="noopener" class="btn btn--wa btn--block">${icon("wa")}<span data-i18n="cart.wa">${t("cart.wa")}</span></a>
       <p class="fine" style="text-align:center;margin:2px 0 0" data-i18n="cart.cod">${t("cart.cod")}</p>
     </div></aside></div>`;
@@ -336,7 +359,7 @@ function openLayer(id){
   if(id==="cart") renderCart();
 }
 function closeLayers(){
-  $$(".drawer.is-open,.search.is-open,.popup.is-open").forEach(el => { el.classList.remove("is-open"); el.setAttribute("aria-hidden","true"); });
+  $$(".drawer.is-open,.search.is-open,.popup.is-open,.osheet.is-open").forEach(el => { el.classList.remove("is-open"); el.setAttribute("aria-hidden","true"); });
   document.body.classList.remove("is-locked");
   if(lastFocus && lastFocus.focus) lastFocus.focus();
 }
@@ -377,12 +400,13 @@ function mountShell(){
   const page = document.body.dataset.page || "";
   const active = document.body.dataset.cat || "";
   document.body.insertAdjacentHTML("afterbegin", annHtml() + headerHtml(active));
-  document.body.insertAdjacentHTML("beforeend", footerHtml() + mobileNavHtml() + cartDrawerHtml() + searchHtml() + floatHtml());
+  document.body.insertAdjacentHTML("beforeend", footerHtml() + mobileNavHtml() + cartDrawerHtml() + searchHtml() + orderSheetHtml() + floatHtml());
   // Desktop search icon on right
 }
 
 function bindGlobal(){
   document.addEventListener("click", e => {
+    const od = e.target.closest("[data-order]"); if(od){ e.preventDefault(); openOrder(od.dataset.order); return; }
     const o = e.target.closest("[data-open]"); if(o){ e.preventDefault(); openLayer(o.dataset.open); return; }
     if(e.target.closest("[data-close]")){ closeLayers(); return; }
     const a = e.target.closest("[data-add]"); if(a){ e.preventDefault(); addToCart(a.dataset.add); return; }
@@ -406,12 +430,142 @@ function bindGlobal(){
   window.addEventListener("scroll", onS, {passive:true}); onS();
   // Pop-up -10 % après 10 secondes (une seule fois)
   if(!store.get("popupSeen", false) && !store.get("subscribed", false) && document.body.dataset.page !== "checkout"){
-    setTimeout(() => { if(!$(".drawer.is-open,.search.is-open")){ openLayer("popup"); store.set("popupSeen", true); } }, 10000);
+    setTimeout(() => { if(!$(".drawer.is-open,.search.is-open,.osheet.is-open")){ openLayer("popup"); store.set("popupSeen", true); } }, 10000);
   }
   document.addEventListener("sl:lang", () => { renderCart(); });
 }
 
-window.SL = { $, $$, IMG, fmt, icon, stars, card, byId, addToCart, toggleFav, openCart, toast, waLink, initReveal, initCarousel, ruleSvg, t, catName, COLOR_LABEL, cartTotals, cartWaMessage, store, esc, logo, get cart(){return cart;}, clearCart(){ cart = []; saveCart(); }, get favs(){return favs;}, get lang(){return LANG;}, get gift(){return gift;} };
+
+/* =========================================================
+   COMMANDE — formulaire unique (panier, achat express, page commande)
+   ========================================================= */
+const TOP_CITIES = ["Casablanca","Rabat","Marrakech","Fès","Tanger","Agadir","Meknès","Oujda","Kénitra","Tétouan"];
+const digits = v => (v||"").replace(/\D/g, "");
+function normPhone(v){ let d = digits(v); if(d.startsWith("212")) d = "0" + d.slice(3); else if(d.length === 9) d = "0" + d; return d; }
+const phoneOk = v => /^0[5-7]\d{8}$/.test(normPhone(v));
+const fmtPhone = d => d.replace(/^(\d{2})(\d{0,2})(\d{0,2})(\d{0,2})(\d{0,2}).*/, (m,a,b,c,e,f) => [a,b,c,e,f].filter(Boolean).join(" "));
+let orderCtx = null;
+
+function orderSheetHtml(){
+  return `<div class="osheet" id="order" aria-hidden="true"><div class="osheet__scrim" data-close></div>
+    <div class="osheet__box" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+      <div class="osheet__head"><div><span class="eyebrow">Paiement à la livraison</span><h2 class="osheet__title" id="orderTitle">Finaliser ma commande</h2></div><button class="icon-btn" data-close aria-label="Fermer">${icon("close")}</button></div>
+      <div class="osheet__body" id="orderBody"></div>
+      <div class="osheet__foot" id="orderFoot"></div>
+    </div></div>`;
+}
+function recapHtml(items, T, editable){
+  return `<div class="orecap">
+    ${items.map((it,i) => { const p = byId(it.id); return `<div class="orecap__it">
+      <span class="thumbqty"><img src="${IMG(p.imgs[0])}" alt=""><em>${it.qty}</em></span>
+      <div class="orecap__txt"><b>${esc(p.name)}</b><small>${esc(p.type)}${itemOpts(it)?" · "+itemOpts(it):""}</small>
+        ${editable ? `<div class="qty qty--sm"><button type="button" data-oq="-1" data-i="${i}" aria-label="Diminuer">${icon("minus")}</button><span>${it.qty}</span><button type="button" data-oq="1" data-i="${i}" aria-label="Augmenter">${icon("plus")}</button></div>` : ""}</div>
+      <span class="orecap__price">${fmt(p.price*it.qty)}</span></div>`; }).join("")}
+    <div class="orecap__tot">
+      <div class="sumrow"><span>Sous-total</span><span>${fmt(T.sub)}</span></div>
+      ${T.disc ? `<div class="sumrow sumrow--disc"><span>Remise parure -15 %</span><span>-${fmt(T.disc)}</span></div>` : ""}
+      ${T.giftFee ? `<div class="sumrow"><span>Emballage cadeau</span><span>${fmt(T.giftFee)}</span></div>` : ""}
+      <div class="sumrow"><span>Livraison</span><span>${T.ship ? fmt(T.ship) : `<b class="gold">Offerte</b>`}</span></div>
+      <div class="sumrow sumrow--total"><span>Total à la livraison</span><span>${fmt(T.total)}</span></div>
+    </div></div>`;
+}
+function formHtml(cust){
+  const city = cust.city || "";
+  const others = window.SL_CITIES.filter(c => !TOP_CITIES.includes(c));
+  return `<form class="oform" id="oform" novalidate>
+    <label class="flabel">Nom complet<input class="field" name="name" autocomplete="name" placeholder="Ex. Salma Benali" value="${esc(cust.name||"")}" required><span class="err">Indiquez votre nom et prénom.</span></label>
+    <label class="flabel">Téléphone<span class="tel"><span>+212</span><input class="field" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="06 12 34 56 78" value="${esc(cust.phone||"")}" required></span><span class="err">Numéro invalide. Exemple : 06 12 34 56 78</span></label>
+    <div class="fgrid fgrid--2">
+      <label class="flabel">Ville<select class="field" name="city" required><option value="">Choisir…</option><optgroup label="Grandes villes">${TOP_CITIES.map(c=>`<option ${c===city?"selected":""}>${c}</option>`).join("")}</optgroup><optgroup label="Autres villes">${others.map(c=>`<option ${c===city?"selected":""}>${c}</option>`).join("")}</optgroup></select><span class="err">Choisissez votre ville.</span></label>
+      <label class="flabel">Quartier et adresse<input class="field" name="address" autocomplete="street-address" placeholder="Quartier, rue, n°" value="${esc(cust.address||"")}" required><span class="err">Indiquez votre adresse.</span></label>
+    </div>
+    <details class="onote"><summary>${icon("plus")} Ajouter une note (créneau, message cadeau…)</summary><textarea class="field" name="note" rows="2" placeholder="Ex. livrer après 17 h"></textarea></details>
+    <label class="ogift"><input type="checkbox" name="gift" ${orderCtx && orderCtx.gift ? "checked":""}> ${icon("gift")} <span>Emballage cadeau premium <small>+${fmt(C.giftWrap)}</small></span></label>
+    <div class="ocod">${icon("cash")}<div><b>Paiement à la livraison</b><small>Vous payez en espèces à la réception. Aucun paiement en ligne.</small></div></div>
+    <div id="oSubmitSlot"></div>
+    <div class="oor"><span>ou</span></div>
+    <a class="btn btn--wa btn--block" id="oWa" target="_blank" rel="noopener">${icon("wa")}<span>Commander directement sur WhatsApp</span></a>
+  </form>`;
+}
+function renderOrder(){
+  const box = orderCtx.el; const T = totalsFor(orderCtx.items, orderCtx.gift);
+  const keep = {}; const f0 = box.querySelector("#oform");
+  if(f0) ["name","phone","city","address","note"].forEach(n => keep[n] = f0.elements[n].value);
+  const cust = f0 ? keep : store.get("customer", {});
+  box.innerHTML = `<ul class="otrust"><li>${icon("cash")} Paiement à la livraison</li><li>${icon("truck")} 24 à 72 h partout au Maroc</li><li>${icon("refresh")} Échange 7 jours</li></ul>`
+    + recapHtml(orderCtx.items, T, orderCtx.source === "express") + formHtml(cust);
+  if(keep.note){ box.querySelector("[name=note]").value = keep.note; box.querySelector(".onote").open = true; }
+  const sub = `<button class="btn btn--dark btn--lg btn--block osubmit" type="submit" form="oform"><span>Confirmer la commande</span><span class="osubmit__tot">${fmt(T.total)}</span></button>
+    <p class="fine" style="text-align:center;margin:0">Nous vous appelons ou vous écrivons sur WhatsApp pour confirmer avant l'envoi.</p>`;
+  if(orderCtx.foot){ orderCtx.foot.innerHTML = sub; box.querySelector("#oSubmitSlot").remove(); }
+  else box.querySelector("#oSubmitSlot").outerHTML = sub;
+  box.querySelector("#oWa").href = waLink(orderMessage(orderCtx.items, T));
+  bindOrderForm(box);
+}
+function bindOrderForm(box){
+  const f = box.querySelector("#oform");
+  const ph = f.elements.phone;
+  ph.addEventListener("input", () => { const d = normPhone(ph.value).slice(0,10); if(digits(ph.value).length >= 2) ph.value = fmtPhone(d); });
+  f.addEventListener("change", e => {
+    if(e.target.name === "gift"){ orderCtx.gift = e.target.checked; if(orderCtx.source === "cart"){ gift = e.target.checked; store.set("gift", gift); renderCart(); } renderOrder(); }
+    const lab = e.target.closest(".flabel"); if(lab && lab.classList.contains("is-err")) validate(f, true);
+  });
+  box.addEventListener("click", e => {
+    const q = e.target.closest("[data-oq]"); if(!q) return;
+    const it = orderCtx.items[+q.dataset.i]; it.qty = Math.max(1, Math.min(10, it.qty + +q.dataset.oq)); renderOrder();
+  });
+  f.addEventListener("submit", e => { e.preventDefault(); if(validate(f)) submitOrder(f); });
+}
+function validate(f, quiet){
+  let first = null;
+  const chk = (n, ok) => { const lab = f.elements[n].closest(".flabel"); lab.classList.toggle("is-err", !ok); if(!ok && !first) first = f.elements[n]; };
+  chk("name", f.elements.name.value.trim().split(/\s+/).join("").length >= 3);
+  chk("phone", phoneOk(f.elements.phone.value));
+  chk("city", !!f.elements.city.value);
+  chk("address", f.elements.address.value.trim().length >= 4);
+  if(first && !quiet) first.focus();
+  return !first;
+}
+function submitOrder(f){
+  const btn = (orderCtx.foot || f).querySelector(".osubmit"); btn.disabled = true; btn.classList.add("is-loading");
+  const customer = { name: f.elements.name.value.trim(), phone: fmtPhone(normPhone(f.elements.phone.value)), city: f.elements.city.value, address: f.elements.address.value.trim(), note: f.elements.note.value.trim() };
+  store.set("customer", { name: customer.name, phone: customer.phone, city: customer.city, address: customer.address });
+  const items = orderCtx.items.map(x => ({...x}));
+  const T = totalsFor(items, orderCtx.gift);
+  const ref = "SL-" + Date.now().toString(36).toUpperCase().slice(-6);
+  const order = { ref, date: new Date().toISOString(), customer, gift: orderCtx.gift, totals: { sub:T.sub, discount:Math.round(T.disc), shipping:T.ship, gift:T.giftFee, total:Math.round(T.total) },
+    items: items.map(it => { const p = byId(it.id); return { id:p.id, name:p.name, type:p.type, options:itemOpts(it), qty:it.qty, price:p.price }; }) };
+  const orders = store.get("orders", []); orders.unshift(order); store.set("orders", orders.slice(0,20));
+  // Envoi au back-office (Google Sheets, Make, Zapier…) si une URL est configurée dans SL_CONFIG.orderWebhook
+  if(C.orderWebhook){ try{ fetch(C.orderWebhook, { method:"POST", mode:"no-cors", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(order) }).catch(()=>{}); }catch(e){} }
+  if(orderCtx.source === "cart"){ cart = []; saveCart(); }
+  const wa = waLink(orderMessage(items, T, customer, ref));
+  setTimeout(() => {
+    orderCtx.el.innerHTML = `<div class="odone">
+      <div class="done__seal">${icon("check")}</div>
+      <span class="eyebrow">Commande ${ref}</span>
+      <h3 class="osheet__title" style="font-size:30px">Merci ${esc(customer.name.split(" ")[0])}, c'est noté !</h3>
+      <p class="muted" style="margin:0">Dernière étape : envoyez-nous votre commande sur WhatsApp pour la confirmer en un clic. Nous préparons votre écrin dès réception.</p>
+      <a class="btn btn--wa btn--lg btn--block" href="${wa}" target="_blank" rel="noopener">${icon("wa")}<span>Confirmer sur WhatsApp</span></a>
+      <ol class="otimeline"><li class="is-done"><b>Commande reçue</b><small>${items.length} article${items.length>1?"s":""} · ${fmt(T.total)}</small></li><li><b>Confirmation</b><small>Par WhatsApp ou appel au ${esc(customer.phone)}</small></li><li><b>Livraison à ${esc(customer.city)}</b><small>Sous 24 à 72 h · paiement en espèces</small></li></ol>
+      <a class="link-u" href="index.html" data-close>Continuer mes achats</a></div>`;
+    if(orderCtx.foot) orderCtx.foot.innerHTML = "";
+    orderCtx.el.scrollTop = 0;
+  }, 450);
+}
+function openOrder(source, items){
+  if(source === "cart" && !cart.length) return;
+  const el = $("#orderBody");
+  orderCtx = { source, el, foot: $("#orderFoot"), items: source === "cart" ? cart : items, gift: source === "cart" ? gift : false };
+  renderOrder(); closeLayers(); openLayer("order");
+}
+/* Page commande.html : même formulaire, intégré dans la page */
+function mountOrderPage(el){
+  if(!cart.length){ return false; }
+  orderCtx = { source:"cart", el, foot: null, items: cart, gift }; renderOrder(); return true;
+}
+
+window.SL = { $, $$, IMG, fmt, icon, stars, card, byId, addToCart, toggleFav, openCart, toast, waLink, initReveal, initCarousel, ruleSvg, t, catName, COLOR_LABEL, cartTotals, cartWaMessage, orderMessage, totalsFor, openOrder, mountOrderPage, store, esc, logo, get cart(){return cart;}, clearCart(){ cart = []; saveCart(); }, get favs(){return favs;}, get lang(){return LANG;}, get gift(){return gift;} };
 
 mountShell();
 applyLang();

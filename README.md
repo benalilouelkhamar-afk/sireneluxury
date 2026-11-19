@@ -25,3 +25,10 @@ Maquette HTML/CSS/JS statique (sans dépendance ni build) d'une boutique de joai
 - `tools/build_pages.py` : régénère les pages secondaires (`python3 tools/build_pages.py`).
 
 Adaptation Shopify / YouCan : chaque section correspond à une section de thème ; remplacer `SL_PRODUCTS` par les objets produits de la plateforme.
+
+## Commandes
+- **Commander maintenant** (fiche produit) et **Passer la commande** (panier) ouvrent le même formulaire court : nom, téléphone, ville, adresse. Le paiement se fait à la livraison.
+- Après validation, la cliente voit sa référence (SL-XXXXXX) et un bouton **Confirmer sur WhatsApp**. Ce bouton envoie la commande complète (articles, total, adresse) au numéro de la boutique.
+- **WhatsApp direct** : chaque bouton WhatsApp envoie un message déjà rempli (produit, options, quantité, total).
+- **Recevoir les commandes dans Google Sheets** (facultatif) : suivez `tools/google-sheets-commandes.gs` puis collez l'URL dans `SL_CONFIG.orderWebhook`.
+- Les coordonnées de la cliente sont mémorisées sur son téléphone pour pré-remplir sa prochaine commande.

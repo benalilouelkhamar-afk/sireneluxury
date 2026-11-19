@@ -11,6 +11,9 @@ window.SL_CONFIG = {
   shippingFee: 35,
   bundleDiscount: 0.15,               // -15 % sur la parure complète
   giftWrap: 25,
+  // URL qui reçoit chaque commande en JSON (Google Sheets via Apps Script, Make, Zapier…).
+  // Voir tools/google-sheets-commandes.gs. Laisser vide pour ne rien envoyer.
+  orderWebhook: "",
   currency: "DH"
 };
 
