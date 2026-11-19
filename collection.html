@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Collection — Sirène Luxury</title>
+<meta name="description" content="Colliers, bracelets, bagues, boucles d'oreilles et parures en acier inoxydable et Xuping plaqué or. Livraison partout au Maroc.">
+<meta name="theme-color" content="#FAF7F2">
+<meta property="og:title" content="Sirène Luxury — L'éclat qui ne s'efface jamais">
+<meta property="og:description" content="Bijoux en acier inoxydable et Xuping, conçus pour durer. Livraison partout au Maroc.">
+<meta property="og:image" content="assets/img/look-caftan.webp">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Tajawal:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-page="collection">
+
+<main id="main">
+
+<section class="phero" id="phero"></section>
+<div class="container">
+  <div class="subcats" id="subcats"></div>
+  <div class="toolbar">
+    <button class="toolbar__btn toolbar__filter" id="filterBtn"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtrer</button>
+    <span class="muted" style="font-size:12.5px" id="count"></span>
+    <label style="display:flex;align-items:center;gap:4px;font-size:12.5px"><span class="muted hide-sm" style="display:none">Trier :</span>
+      <select id="sort" aria-label="Trier"><option value="feat">Mis en avant</option><option value="new">Nouveautés</option><option value="rating">Les plus aimés</option><option value="asc">Prix croissant</option><option value="desc">Prix décroissant</option></select></label>
+  </div>
+  <div class="layout" style="padding-bottom:80px">
+    <aside class="filters" id="filters" aria-label="Filtres"></aside>
+    <div class="pgrid pgrid--cat" id="grid"></div>
+  </div>
+</div>
+<div class="drawer" id="filterDrawer"><div class="drawer__scrim" data-fclose></div><aside class="drawer__panel" role="dialog" aria-label="Filtres">
+  <div class="drawer__head"><span class="drawer__title">Filtres</span><button class="icon-btn" data-fclose aria-label="Fermer"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="drawer__body" id="filtersM"></div>
+  <div class="cart__foot"><button class="btn btn--dark btn--block" data-fclose>Voir les bijoux</button></div></aside></div>
+</main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/collection.js"></script>
+</body>
+</html>
