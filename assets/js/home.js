@@ -4,6 +4,7 @@ const { $, $$, IMG, fmt, icon, stars, card, byId, addToCart, waLink, initReveal,
 const P = window.SL_PRODUCTS, C = window.SL_CONFIG;
 
 $$("[data-rule]").forEach(el => el.outerHTML = ruleSvg);
+$$("[data-ico]").forEach(el => el.outerHTML = icon(el.dataset.ico));
 $$("[data-wa-general]").forEach(a => { a.href = waLink("Bonjour Sirène Luxury, j'aimerais découvrir vos bijoux et passer commande."); a.target = "_blank"; a.rel = "noopener"; });
 
 /* Hero slider */
@@ -12,7 +13,7 @@ $$("[data-wa-general]").forEach(a => { a.href = waLink("Bonjour Sirène Luxury, 
   const go = n => { i = (n + slides.length) % slides.length;
     slides.forEach((s,k)=>s.classList.toggle("is-active",k===i));
     dots.forEach((d,k)=>{ d.classList.remove("is-active"); void d.offsetWidth; d.classList.toggle("is-active",k===i); });
-    num.textContent = "0"+(i+1); clearTimeout(tm); tm = setTimeout(()=>go(i+1), 6000); };
+    num.textContent = "0"+(i+1); const lb = $("#heroLabel"); if(lb) lb.textContent = slides[i].dataset.label || ""; clearTimeout(tm); tm = setTimeout(()=>go(i+1), 6000); };
   dots.forEach((d,k)=>d.addEventListener("click",()=>go(k)));
   // swipe
   let x0 = null; const h = $(".hero");

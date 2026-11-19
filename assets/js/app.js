@@ -206,8 +206,8 @@ function annHtml(){
   return `<div class="ann" role="region" aria-label="Annonces"><div class="ann__track">${one}${one}${one}${one}</div></div>`;
 }
 const MEGA = {
-  colliers:["c-pendentif-cercle","c-collier-cubain","c-sautoir-nacre","c-pendentif-medaillon"],
-  bracelets:["c-jonc-clous","c-cubaine-bracelet","joncs-flatlay","bracelets-trefles"],
+  colliers:["c-collier-cubain","c-pendentif-cercle","c-sautoir-nacre","c-pendentif-medaillon"],
+  bracelets:["c-bracelet-chaine","c-jonc-clous","c-cubaine-bracelet","c-tennis"],
   bagues:["c-bague-duo","c-bagues-chaines","c-bague-emeraude","jonc-bagues-boucles"],
   boucles:["c-boucles-spirale","c-puces-medaillon","c-boucles-emeraude","c-boucles-trefle-vertes"],
   parures:["parure-emeraude","parure-nacre","parure-trefle-chaine","look-caftan"]
@@ -232,21 +232,21 @@ function headerHtml(active){
   return `<header class="header" id="header"><div class="container header__bar">
     <div class="header__left">
       <button class="icon-btn header__burger" data-open="menu" aria-label="${t("nav.menu")}">${icon("menu")}</button>
-      <button class="icon-btn hide-sm header__burger" data-open="search" aria-label="${t("nav.search")}">${icon("search")}</button>
-      <nav class="header__nav" aria-label="Navigation principale">
-        ${nav.map(k=>`<div class="nav-item"><a class="nav-link ${active===k?"is-active":""}" href="collection.html?c=${k}">${CATS[k].short ? (LANG==="ar"?CATS[k].ar:CATS[k].short) : catName(k)}</a>${megaHtml(k)}</div>`).join("")}
-        <div class="nav-item"><a class="nav-link" href="collection.html?c=nouveautes" data-i18n="nav.collections">${t("nav.collections")}</a>${megaCollections()}</div>
-      </nav>
+      <div class="lang" role="group" aria-label="Langue"><button data-lang="fr">FR</button><button data-lang="ar" lang="ar">عربي</button></div>
+      <button class="icon-btn hide-sm" data-open="search" aria-label="${t("nav.search")}">${icon("search")}</button>
     </div>
     ${logo()}
     <div class="header__right">
-      <div class="lang" role="group" aria-label="Langue"><button data-lang="fr">FR</button><button data-lang="ar">ع</button></div>
-      <button class="icon-btn" data-open="search" aria-label="${t("nav.search")}" style="display:none" id="searchDesk">${icon("search")}</button>
       <a class="icon-btn hide-sm" href="collection.html?c=favoris" aria-label="${t("nav.fav")}">${icon("heart")}<span class="badge-count" data-fav-count>0</span></a>
       <a class="icon-btn hide-sm" href="contact.html" aria-label="${t("nav.account")}">${icon("user")}</a>
       <button class="icon-btn" data-open="cart" aria-label="${t("nav.cart")}">${icon("bag")}<span class="badge-count" data-cart-count>0</span></button>
     </div>
-  </div></header>`;
+  </div>
+  <nav class="header__nav" aria-label="Navigation principale">
+    ${nav.map(k=>`<div class="nav-item"><a class="nav-link ${active===k?"is-active":""}" href="collection.html?c=${k}">${CATS[k].short ? (LANG==="ar"?CATS[k].ar:CATS[k].short) : catName(k)}</a>${megaHtml(k)}</div>`).join("")}
+    <div class="nav-item"><a class="nav-link" href="collection.html?c=nouveautes" data-i18n="nav.collections">${t("nav.collections")}</a>${megaCollections()}</div>
+    <div class="nav-item"><a class="nav-link" href="collection.html?c=montres">${catName("montres")}</a></div>
+  </nav></header>`;
 }
 function mobileNavHtml(){
   const nav = ["colliers","bracelets","bagues","boucles","parures"];
@@ -379,9 +379,6 @@ function mountShell(){
   document.body.insertAdjacentHTML("afterbegin", annHtml() + headerHtml(active));
   document.body.insertAdjacentHTML("beforeend", footerHtml() + mobileNavHtml() + cartDrawerHtml() + searchHtml() + floatHtml());
   // Desktop search icon on right
-  const mq = window.matchMedia("(min-width:1100px)");
-  const sd = () => { $("#searchDesk").style.display = mq.matches ? "inline-grid" : "none"; };
-  sd(); mq.addEventListener ? mq.addEventListener("change", sd) : mq.addListener(sd);
 }
 
 function bindGlobal(){

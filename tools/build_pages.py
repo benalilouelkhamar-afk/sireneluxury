@@ -3,7 +3,7 @@ Usage : python3 tools/build_pages.py  (depuis la racine du projet)"""
 import re, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 head = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read().split('<body')[0]
-head = head.replace('<link rel="preload" as="image" href="assets/img/look-caftan.webp">\n', '')
+head = re.sub(r'<link rel="preload"[^>]*>\n', '', head)
 
 def page(fname, title, desc, page_attr, main, scripts=()):
     h = re.sub(r'<title>.*?</title>', f'<title>{title}</title>', head)
