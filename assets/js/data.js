@@ -92,7 +92,7 @@ window.SL_I18N = {
   fr: {
     "ann.1":"Livraison partout au Maroc","ann.2":"Paiement à la livraison","ann.3":"Bijoux qui ne noircissent pas, garantis","ann.4":"Commandez sur WhatsApp en 1 clic",
     "nav.menu":"Menu","nav.collections":"Collections","nav.all":"Tout voir","nav.search":"Rechercher","nav.fav":"Favoris","nav.account":"Compte","nav.cart":"Panier",
-    "hero.eyebrow":"Haute joaillerie accessible","hero.title":"L'éclat qui ne s'efface jamais","hero.sub":"Bijoux en acier inoxydable et Xuping, conçus pour durer.","hero.cta1":"Découvrir la collection","hero.cta2":"Commander sur WhatsApp",
+    "hero.eyebrow":"Maison marocaine de joaillerie","hero.title":"L'éclat qui ne s'efface jamais","hero.t1":"L'éclat qui ne s'efface","hero.t2":"jamais","hero.badge":"1re commande","hero.s1":"1 248 avis clientes","hero.s2":"Partout au Maroc","hero.s3":"Payé avant livraison","hero.sub":"Bijoux en acier inoxydable et Xuping, conçus pour durer.","hero.cta1":"Découvrir la collection","hero.cta2":"Commander sur WhatsApp",
     "re.1":"Ne noircit pas","re.1s":"Éclat garanti","re.2":"Hypoallergénique","re.2s":"Sans nickel","re.3":"Livraison partout au Maroc","re.3s":"En 24 à 72 h","re.4":"Paiement à la livraison","re.4s":"Payez à réception",
     "cats.eyebrow":"Nos univers","cats.title":"Trouvez votre éclat",
     "new.eyebrow":"Fraîchement arrivés","new.title":"Nouveautés",
@@ -114,7 +114,7 @@ window.SL_I18N = {
   ar: {
     "ann.1":"التوصيل لجميع مدن المغرب","ann.2":"الدفع عند الاستلام","ann.3":"مجوهرات لا يتغير لونها، مضمونة","ann.4":"اطلبي عبر واتساب بنقرة واحدة",
     "nav.menu":"القائمة","nav.collections":"المجموعات","nav.all":"عرض الكل","nav.search":"بحث","nav.fav":"المفضلة","nav.account":"حسابي","nav.cart":"السلة",
-    "hero.eyebrow":"فخامة في متناول الجميع","hero.title":"بريق لا يزول أبداً","hero.sub":"مجوهرات من الفولاذ المقاوم للصدأ والشوبينغ، صُنعت لتدوم.","hero.cta1":"اكتشفي المجموعة","hero.cta2":"اطلبي عبر واتساب",
+    "hero.eyebrow":"دار مغربية للمجوهرات","hero.title":"بريق لا يزول أبداً","hero.t1":"بريق لا يزول","hero.t2":"أبداً","hero.badge":"على أول طلب","hero.s1":"1248 تقييم","hero.s2":"لكل مدن المغرب","hero.s3":"تدفعين عند الاستلام","hero.sub":"مجوهرات من الفولاذ المقاوم للصدأ والشوبينغ، صُنعت لتدوم.","hero.cta1":"اكتشفي المجموعة","hero.cta2":"اطلبي عبر واتساب",
     "re.1":"لا يتغير لونها","re.1s":"لمعان مضمون","re.2":"مضادة للحساسية","re.2s":"بدون نيكل","re.3":"التوصيل لكل المغرب","re.3s":"من 24 إلى 72 ساعة","re.4":"الدفع عند الاستلام","re.4s":"ادفعي عند التوصل",
     "cats.eyebrow":"عوالمنا","cats.title":"اكتشفي بريقك",
     "new.eyebrow":"وصل حديثاً","new.title":"جديدنا",
