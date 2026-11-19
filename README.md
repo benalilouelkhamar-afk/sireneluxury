@@ -12,7 +12,7 @@ Maquette HTML/CSS/JS statique (sans dépendance ni build) d'une boutique de joai
 | `a-propos`, `entretien`, `guide-tailles`, `faq`, `livraison`, `cgv`, `confidentialite`, `contact` | Pages de contenu |
 
 ## À personnaliser
-- `assets/js/data.js` → `SL_CONFIG` : **numéro WhatsApp** (actuellement `212600000000`), liens réseaux, seuil de livraison offerte, remise parure.
+- `assets/js/data.js` → `SL_CONFIG` : **numéro WhatsApp** (`212651508257`, soit 06 51 50 82 57), liens réseaux, seuil de livraison offerte, remise parure.
 - `assets/js/data.js` → `SL_PRODUCTS` : catalogue (noms, prix, photos, stock). `line` regroupe les pièces d'une même parure : 3 pièces d'une ligne dans le panier = -15 % automatique.
 - `SL_REVIEWS` : avis de démonstration à remplacer.
 - `assets/img/` : remplacer les photos (WebP). Les vignettes `c-*.webp` sont des recadrages carrés des photos fournies.

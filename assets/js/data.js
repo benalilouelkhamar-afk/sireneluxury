@@ -3,7 +3,7 @@
    ou par les objets Liquid / YouCan lors de l'intégration)
    ========================================================= */
 window.SL_CONFIG = {
-  whatsapp: "212600000000",           // Numéro WhatsApp Business (format international sans +)
+  whatsapp: "212651508257",           // Numéro WhatsApp Business (format international sans +)
   instagram: "https://www.instagram.com/sireneluxury59/",
   tiktok: "https://www.tiktok.com/@sireneluxury59",
   facebook: "https://www.facebook.com/sireneluxury59",

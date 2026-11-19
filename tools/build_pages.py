@@ -209,8 +209,8 @@ content('confidentialite.html', 'Politique de confidentialité', 'Politique de c
 # ---------- Contact
 content('contact.html', 'Contact', 'Contactez Sirène Luxury par WhatsApp, téléphone ou e-mail.', 'Nous sommes là', 'Une conseillère vous répond 7 jours sur 7 pour vous aider à choisir, commander ou suivre votre colis.', 'lifestyle-lin', f'''
 <div class="contact-cards" style="margin-bottom:40px">
-<a class="ccard" href="https://wa.me/212600000000" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M12 2.2A9.7 9.7 0 0 0 3.6 16.8L2.3 21.7l5-1.3A9.7 9.7 0 1 0 12 2.2z"/></svg><h3>WhatsApp</h3><p>Réponse en moins d'une heure, de 9 h à 22 h.</p><span class="link-u">Écrire</span></a>
-<a class="ccard" href="tel:+212600000000">{IC(PHONE)}<h3>Téléphone</h3><p>+212 6 00 00 00 00<br>Du lundi au samedi.</p><span class="link-u">Appeler</span></a>
+<a class="ccard" href="https://wa.me/212651508257" target="_blank" rel="noopener"><svg class="icon" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M12 2.2A9.7 9.7 0 0 0 3.6 16.8L2.3 21.7l5-1.3A9.7 9.7 0 1 0 12 2.2z"/></svg><h3>WhatsApp</h3><p>Réponse en moins d'une heure, de 9 h à 22 h.</p><span class="link-u">Écrire</span></a>
+<a class="ccard" href="tel:+212651508257">{IC(PHONE)}<h3>Téléphone</h3><p>06 51 50 82 57<br>Du lundi au samedi.</p><span class="link-u">Appeler</span></a>
 <a class="ccard" href="https://www.instagram.com/sireneluxury59/" target="_blank" rel="noopener">{IC(INSTA)}<h3>Instagram</h3><p>@sireneluxury59<br>Nouveautés et coulisses.</p><span class="link-u">Suivre</span></a>
 </div>
 <h2 style="margin-top:0">Écrivez-nous</h2>
